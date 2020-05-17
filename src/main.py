@@ -41,10 +41,11 @@ def process_story(story):
 def format_agent_arg (event, arg):
 	""" If an arg has double curly brackets, replace that section with the 
 	specified key from event """
-	# arg = 'https://api.sunrise-sunset.or{{ }}g/json?lat={{location.latitude}}&lng={{location.longitude}}'
+	arg = 'https://api.sunrise-sunset.or{{k.k}}g/json?lat={{location.latitude}}&lng={{location.longitude}}'
 	pattern = r"\{\{(.*?)\}\}"
 	matches = re.findall(pattern, arg)
 	values = [jmespath.search(match, event) if (bool(match) and not str(match).isspace()) else match for match in matches]
+	values = [x if x is not None else "" for x in values]
 	pdb.set_trace()
 	new_arg = re.sub(pattern, '{}', arg).format(*values)
 	return new_arg
