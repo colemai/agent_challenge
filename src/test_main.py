@@ -56,8 +56,23 @@ def test_format_agent_arg_empty_key():
 	ans = main.format_agent_arg(event, arg)
 	assert ans == "https://api.sunrise-sunset.org/json?lat=53.3165322&lng=-6.3425318"
 
+
 def test_format_agent_arg_unmatching_braces():
 	event = {'location': {'ip': '109.78.65.85', 'success': True, 'type': 'IPv4', 'continent': 'Europe', 'continent_code': 'EU', 'country': 'Ireland', 'country_code': 'IE', 'country_flag': 'https://cdn.ipwhois.io/flags/ie.svg', 'country_capital': 'Dublin', 'country_phone': '+353', 'country_neighbours': 'GB', 'region': 'County Dublin', 'city': 'Dublin', 'latitude': '53.3165322', 'longitude': '-6.3425318', 'asn': 'AS15502', 'org': 'Vodafone Ireland', 'isp': 'Vodafone Ireland Limited', 'timezone': 'Europe/Dublin', 'timezone_name': 'Greenwich Mean Time', 'timezone_dstOffset': '0', 'timezone_gmtOffset': '0', 'timezone_gmt': 'GMT 0:00', 'currency': 'Euro', 'currency_code': 'EUR', 'currency_symbol': '€', 'currency_rates': '0.924078', 'currency_plural': 'euros', 'completed_requests': 60}}
 	arg = "https://api.sunrise-sunset.or{{}g/json?lat={{location.latitude}}&lng={{location.longitude}}"
 	ans = main.format_agent_arg(event, arg)
 	assert ans == "https://api.sunrise-sunset.or{{}g/json?lat=53.3165322&lng=-6.3425318"
+
+
+def test_format_agent_arg_unmatching_braces_2():
+	event = {'location': {'ip': '109.78.65.85', 'success': True, 'type': 'IPv4', 'continent': 'Europe', 'continent_code': 'EU', 'country': 'Ireland', 'country_code': 'IE', 'country_flag': 'https://cdn.ipwhois.io/flags/ie.svg', 'country_capital': 'Dublin', 'country_phone': '+353', 'country_neighbours': 'GB', 'region': 'County Dublin', 'city': 'Dublin', 'latitude': '53.3165322', 'longitude': '-6.3425318', 'asn': 'AS15502', 'org': 'Vodafone Ireland', 'isp': 'Vodafone Ireland Limited', 'timezone': 'Europe/Dublin', 'timezone_name': 'Greenwich Mean Time', 'timezone_dstOffset': '0', 'timezone_gmtOffset': '0', 'timezone_gmt': 'GMT 0:00', 'currency': 'Euro', 'currency_code': 'EUR', 'currency_symbol': '€', 'currency_rates': '0.924078', 'currency_plural': 'euros', 'completed_requests': 60}}
+	arg = "https://api.sunrise-sunset.or{g}/json?lat={{location.latitude}}&lng={{location.longitude}}"
+	ans = main.format_agent_arg(event, arg)
+	assert ans == "https://api.sunrise-sunset.or{g}/json?lat=53.3165322&lng=-6.3425318"
+
+
+def test_format_agent_arg_unmatching_braces_3():
+	event = {'location': {'ip': '109.78.65.85', 'success': True, 'type': 'IPv4', 'continent': 'Europe', 'continent_code': 'EU', 'country': 'Ireland', 'country_code': 'IE', 'country_flag': 'https://cdn.ipwhois.io/flags/ie.svg', 'country_capital': 'Dublin', 'country_phone': '+353', 'country_neighbours': 'GB', 'region': 'County Dublin', 'city': 'Dublin', 'latitude': '53.3165322', 'longitude': '-6.3425318', 'asn': 'AS15502', 'org': 'Vodafone Ireland', 'isp': 'Vodafone Ireland Limited', 'timezone': 'Europe/Dublin', 'timezone_name': 'Greenwich Mean Time', 'timezone_dstOffset': '0', 'timezone_gmtOffset': '0', 'timezone_gmt': 'GMT 0:00', 'currency': 'Euro', 'currency_code': 'EUR', 'currency_symbol': '€', 'currency_rates': '0.924078', 'currency_plural': 'euros', 'completed_requests': 60}}
+	arg = "https://api.sunrise-sunset.or{}}g/json?lat={{location.latitude}}&lng={{location.longitude}}"
+	ans = main.format_agent_arg(event, arg)
+	assert ans == "https://api.sunrise-sunset.or{}}g/json?lat=53.3165322&lng=-6.3425318"

@@ -4,7 +4,7 @@
 Author: Ian
 Purpose: Coding exercise, agent based orchestration
 Input: path to json file
-Output: 
+Output: STDOUT 
 Sample Run: python src/main.py data/tiny-tines-sunset.json
 """
 
@@ -41,14 +41,17 @@ def process_story(story):
 def format_agent_arg (event, arg):
 	""" If an arg has double curly brackets, replace that section with the 
 	specified key from event """
-	arg = 'https://api.sunrise-sunset.or{{k.k}}g/json?lat={{location.latitude}}&lng={{location.longitude}}'
-	pattern = r"\{\{(.*?)\}\}"
-	matches = re.findall(pattern, arg)
+	pattern = r"\{\{(.*?)\}\}" 
+	matches = re.findall(pattern, arg) 
+	brace_mismatch_pattern = r"[{}].*[{}]"
+	matches = [re.sub(brace_mismatch_pattern, '', x) for x in matches]
 	values = [jmespath.search(match, event) if (bool(match) and not str(match).isspace()) else match for match in matches]
-	values = [x if x is not None else "" for x in values]
-	pdb.set_trace()
-	new_arg = re.sub(pattern, '{}', arg).format(*values)
-	return new_arg
+	values = [x if x is not None else "" for x in values] 
+	
+	for i in range(0, len(matches)):
+		match = ''.join(['{{', matches[i], '}}'])
+		arg = arg.replace(match, str(values[i]))
+	return arg
 
 
 def http_req_agent (options, event={}):
