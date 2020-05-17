@@ -3,7 +3,7 @@
 """
 Author: Ian
 Purpose: Coding exercise, agent based orchestration
-Input: path to json file
+Input: Path to json file
 Output: STDOUT 
 Sample Run: python src/main.py data/tiny-tines-sunset.json
 """
@@ -23,7 +23,7 @@ def ingest_story(path_to_story):
 
 
 def process_story(story):
-	""" process a json story through agents the specified agents """
+	""" process a json story through the specified agents """
 	assert type(story) is dict
 	assert bool(story) == True # check not empty
 	event = {}
@@ -44,7 +44,8 @@ def format_agent_arg (event, arg):
 	matches = re.findall(pattern, arg) 
 	brace_mismatch_pattern = r"[{}].*[{}]"
 	matches = [re.sub(brace_mismatch_pattern, '', x) for x in matches]
-	values = [jmespath.search(match, event) if (bool(match) and not str(match).isspace()) else match for match in matches]
+	values = [jmespath.search(match, event) if (bool(match) \
+		and not str(match).isspace()) else match for match in matches]
 	values = [x if x is not None else "" for x in values] 
 	
 	for i in range(0, len(matches)):
