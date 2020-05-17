@@ -13,7 +13,6 @@ import json
 import jmespath
 import requests
 import re
-import pdb
 
 
 def ingest_story(path_to_story):
