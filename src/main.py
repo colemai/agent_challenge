@@ -11,9 +11,12 @@ Sample Run: python src/main.py data/tiny-tines-sunset.json
 from sys import argv
 import json
 import pytest
-# import jmespath
+import jmespath
 import requests
 import pdb
+import re
+# import logging
+# logging.basicConfig(level=logging.INFO)
 
 
 def ingest_story(path_to_story):
@@ -28,9 +31,21 @@ def process_story(story):
 	assert bool(story) == True # check not empty
 	event = {}
 	for agent in story['agents']:
+		print('Running agent', agent['name'])
 		if agent['type'] == 'HTTPRequestAgent':
 			event[agent['name']] = http_req_agent(agent['options'], event)
-			return event
+		if agent['type'] == 'PrintAgent':
+			event[agent['name']] = print_agent(agent['options'], event)
+
+
+def format_agent_arg (event, arg):
+	""" If an arg has double curly brackets, replace the section with the 
+	specified key from event """
+	pattern = r"\{\{(.*?)\}\}"
+	matches = re.findall(pattern, arg)
+	values = [jmespath.search(match, event) for match in matches]
+	new_arg = re.sub(pattern, '{}', arg).format(*values)
+	return new_arg
 
 
 
@@ -40,8 +55,13 @@ def http_req_agent (options, event={}):
 	assert 'url' in options
 	assert isinstance(options['url'], str)
 	assert bool(options) == True # check not empty
-	print(options)
-	response = requests.get(options['url'])
+
+	url = options['url']
+	# If the url needs input from previous agent:
+	if event != {}:
+		url = format_agent_arg(event, url)
+
+	response = requests.get(url)
 	assert response.status_code == 200 #TODO account for fails
 	#TODO create log file and add response.headers
 
@@ -55,6 +75,12 @@ def print_agent (options, event={}):
 	assert isinstance(options['message'], str)
 	assert bool(options) == True # check not empty
 
+	print (options, event)
+	message = options['message']
+	if event != {}:
+		message = format_agent_arg(event, message)
+	print(message)
+	return message
 
 
 if __name__ == '__main__':
